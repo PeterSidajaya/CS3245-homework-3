@@ -60,8 +60,8 @@ def build_index(in_dir, out_dict, out_postings):
         if term == 'LENGTH':
             continue
         df, posting_list = value
-        pickle.dump(posting_list, posting_file)
         pointer = posting_file.tell()
+        pickle.dump(posting_list, posting_file)
         dictionary[term] = (df, pointer)
         
     pickle.dump(dictionary, dictionary_file)

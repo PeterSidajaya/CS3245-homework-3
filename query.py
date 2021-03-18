@@ -15,10 +15,10 @@ def search(query, dictionary, postings_file):
     Returns:
         str: search rank result
     """
-    stemmer = nltk.stem.PorterStemmer()
-        
-    wt_document = []
     posting_file = open(postings_file, 'rb')
+
+    # all tokenization should consistent with the one from index.py
+    stemmer = nltk.stem.PorterStemmer()
     token_list = list(map(lambda x: stemmer.stem(x).lower(), query.split(" ")))
     query_counter = Counter(token_list)
     query_keys = list(query_counter.keys())
@@ -26,12 +26,21 @@ def search(query, dictionary, postings_file):
     query_length = 0
     query_term_vector = []
 
-    # we precomute the value for tf_idf query vector, so next time, we only need to
-    # do dot product with each of the given document (faster)
+    # To get a faster quering, we precomute the value for tf_idf query vector
+    # Next time, we only need to do dot product with each of the given document 
     for i in range(len(query_keys)):
         term = query_keys[i]
         tf_idf_score = 0
 
+        # dictionary is in the form of:
+        # dict = {
+        #   "term1": (df1, pointer_to_posting_file),
+        #   "term2": (df2, pointer_to_posting_file),
+        #   ...
+        # }
+        #
+        # posting_list is in the form of:
+        # [(docID_1, tf1), (docID2, tf2), ...]
         if (term in dictionary):
             term_info = dictionary[term]
             term_df = term_info[0]
@@ -43,14 +52,17 @@ def search(query, dictionary, postings_file):
 
             tf_idf_score = (1 + math.log(query_counter[term], 10)) * math.log(no_of_document / term_df)
             query_length += (tf_idf_score ** 2)
-
+        
         query_term_vector.append(tf_idf_score)
 
     normalize_denominator = math.sqrt(query_length)
     if (normalize_denominator != 0):
+        # final precompute query vector
         query_term_vector = normalize_list(query_term_vector, normalize_denominator)
 
-    document_file_index = dictionary["LENGTH"].keys()
+
+    # dictionary["LENGTH"] is the normalize denominator for a particular document_id which precomputed in index stage
+    document_file_index = dictionary["LENGTH"].keys()   # get all document_id
     ranking_list = []
 
     for doc_id in document_file_index:
@@ -75,14 +87,19 @@ def search(query, dictionary, postings_file):
 
             document_term_vector.append(tf_idf_score)
         
-
         if (doc_length != 0):
+            # final computed document vector for a particular doc_id
             document_term_vector = normalize_list(document_term_vector, doc_length)
         
+        # calculate cosine score
         score = sum([x * y for x, y in zip(query_term_vector, document_term_vector)])
         
+        # cosine score == 0, skipped
         if (score == 0):
             continue
+
+        # maintain the top k results and store it in ranking_list
+        k = 10
 
         if (not ranking_list):
             ranking_list.append((score, doc_id))
@@ -93,14 +110,14 @@ def search(query, dictionary, postings_file):
                         ranking_list.insert(x, (score, doc_id))
                         break
                 
-                if (len(ranking_list) > 10):
-                    ranking_list = ranking_list[:10]
+                if (len(ranking_list) > k):
+                    ranking_list = ranking_list[:k]
             else:
-                if (len(ranking_list) < 10):
+                if (len(ranking_list) < k):
                     ranking_list.append((score, doc_id))
-    
-    print(ranking_list)
+
     return " ".join([str(y) for x, y in ranking_list])
+
 
 def normalize_list(lst, denominator):
     return list(map(lambda x: x/denominator, lst))

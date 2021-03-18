@@ -49,7 +49,7 @@ def build_index(in_dir, out_dict, out_postings):
                 posting_list = dictionary[term][1] + [(int(filename), tf)]
                 dictionary[term] = (df, posting_list)
             length += (1 + math.log(tf, 10)) ** 2
-        dictionary['LENGTH'][int(filename)] = length
+        dictionary['LENGTH'][int(filename)] = math.sqrt(length)
 
     posting_file = open(out_postings, 'wb')
     dictionary_file = open(out_dict, 'wb')

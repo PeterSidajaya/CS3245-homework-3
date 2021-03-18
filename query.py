@@ -1,12 +1,8 @@
 from collections import Counter
-from spimi import merge_lists
-from config import make_pointer
 import nltk
 import pickle
 import math
 
-def cosine_score():
-    return
 
 def search(query, dictionary, postings_file):
     """rank the list of document based on the query given
@@ -17,7 +13,7 @@ def search(query, dictionary, postings_file):
         postings_file (str): address to the posting file list
 
     Returns:
-        str: search result
+        str: search rank result
     """
     stemmer = nltk.stem.PorterStemmer()
         
@@ -31,7 +27,7 @@ def search(query, dictionary, postings_file):
     query_term_vector = []
 
     # we precomute the value for tf_idf query vector, so next time, we only need to
-    # do dot product with each of the given document
+    # do dot product with each of the given document (faster)
     for i in range(len(query_keys)):
         term = query_keys[i]
         tf_idf_score = 0
@@ -87,7 +83,7 @@ def search(query, dictionary, postings_file):
         
         if (score == 0):
             continue
-        
+
         if (not ranking_list):
             ranking_list.append((score, doc_id))
         else:

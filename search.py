@@ -16,7 +16,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
     perform searching on the given queries file and output the results to a file
     """
     print('running search on the queries...')
-    infile = open(dict_file,'rb')
+    infile = open(dict_file, 'rb')
     new_dict = pickle.load(infile)
     infile.close()
     

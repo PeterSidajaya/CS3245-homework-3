@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-from ssl import DER_cert_to_PEM_cert
 from spimi import count_word
-from config import make_pointer
 
 import re
 import nltk
@@ -10,7 +8,6 @@ import getopt
 import os
 import pickle
 import math
-import shutil
 
 def usage():
     print("usage: " + sys.argv[0] + " -i directory-of-documents -d dictionary-file -p postings-file")

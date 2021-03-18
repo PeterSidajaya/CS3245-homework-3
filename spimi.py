@@ -1,6 +1,3 @@
-import pickle
-import os
-
 def count_word(token_list):
     """convert a stream of tokens into list of dictionary of term, frequency pairs
 

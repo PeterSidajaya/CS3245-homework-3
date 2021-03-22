@@ -14,26 +14,3 @@ def count_word(token_list):
         else:
             count[term] += 1
     return count
-
-
-def merge_lists(list_1, list_2):
-    """merge two lists into one
-    """
-    i = 0
-    j = 0
-    list = []
-    while i < len(list_1) and j < len(list_2):
-        if list_1[i] < list_2[j]:
-            list.append(list_1[i])
-            i += 1
-        elif list_1[i] > list_2[j]:
-            list.append(list_2[j])
-            j+= 1
-        elif list_1[i] == list_2[j]:
-            list.append(list_1[i])
-            i += 1
-            j += 1
-    list.extend(list_1[i:])
-    list.extend(list_2[j:])
-    return list
-

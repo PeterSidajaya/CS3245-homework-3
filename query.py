@@ -85,25 +85,26 @@ def search(query, dictionary, postings_file):
                 document_term_dict[term][doc_id] = tf_idf_score / dictionary["LENGTH"][doc_id]  # normalize score
                 potential_document_id.add(doc_id)
     
-    # calculate cosine score
+    # sort the list in case two or more document_id score the same
+    potential_document_id = sorted(list(potential_document_id))
+
+    # calculate and rank document_id based on cosine score
     for doc_id in potential_document_id:
         document_term_vector = []
-        # score = []
+        score = []
 
-        # for i in range(len(query_keys)):
-        #     if (term not in document_term_dict or doc_id not in document_term_dict[term]):
-        #         score.append(0)
-        #     else:
-        #         score.append(document_term_dict[term][doc_id] * query_term_vector[0])
+        # calculate cosine score
+        for i in range(len(query_keys)):
+            term = query_keys[i]
 
-        for term in query_keys:
             if (term not in document_term_dict or doc_id not in document_term_dict[term]):
-                document_term_vector.append(0)
+                score.append(0)
             else:
-                document_term_vector.append(document_term_dict[term][doc_id])
+                score.append(document_term_dict[term][doc_id] * query_term_vector[i])
 
-        score = sum([x * y for x, y in zip(query_term_vector, document_term_vector)])
-        # score = sum(score)
+        # final cosine score for ranking
+        score = sum(score)
+
         # maintain the top k results and store it in ranking_list
         k = 10
 

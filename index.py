@@ -8,6 +8,7 @@ import getopt
 import os
 import pickle
 import math
+import string
 
 def usage():
     print("usage: " + sys.argv[0] + " -i directory-of-documents -d dictionary-file -p postings-file")
@@ -37,7 +38,9 @@ def build_index(in_dir, out_dict, out_postings):
         document.close()
         document_list = [nltk.tokenize.word_tokenize(text) for text in document_text]
         flattened_list = [text for ls in document_list for text in ls]
-        token_list = list(map(lambda x: stemmer.stem(x).lower(), flattened_list))
+        filtered_list = [text for text in flattened_list if text not in string.punctuation] # remove punctuation as discussed in the forum
+        token_list = list(map(lambda x: stemmer.stem(x).lower(), filtered_list))
+        
         count_dict = count_word(token_list)
 
         length = 0

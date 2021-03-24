@@ -81,7 +81,7 @@ def search(query, dictionary, postings_file):
             posting_list = pickle.load(posting_file)
             
             for (doc_id, term_freq) in posting_list:
-                tf_idf_score = 1 + math.log(term_freq, 10)
+                tf_idf_score = 1 + math.log(term_freq, 10)  # tf
                 document_term_dict[term][doc_id] = tf_idf_score / dictionary["LENGTH"][doc_id]  # normalize score
                 potential_document_id.add(doc_id)
     

@@ -42,8 +42,9 @@ def build_index(in_dir, out_dict, out_postings):
         token_list = list(map(lambda x: stemmer.stem(x).lower(), filtered_list))
         
         count_dict = count_word(token_list)
-
         length = 0
+    
+        # calculate and precompute doc_freq and posting_lists
         for term, tf in count_dict.items():
             if term not in dictionary:
                 dictionary[term] = (1, [(int(filename), tf)])
@@ -52,6 +53,8 @@ def build_index(in_dir, out_dict, out_postings):
                 posting_list = dictionary[term][1] + [(int(filename), tf)]
                 dictionary[term] = (df, posting_list)
             length += (1 + math.log(tf, 10)) ** 2
+        
+        # calculate document length for document normalization in search
         dictionary['LENGTH'][int(filename)] = math.sqrt(length)
 
     posting_file = open(out_postings, 'wb')
@@ -59,6 +62,7 @@ def build_index(in_dir, out_dict, out_postings):
     posting_file.truncate(0)
     dictionary_file.truncate(0)
 
+    # store posting_lists and dictionary to files
     for term, value in dictionary.items():
         if term == 'LENGTH':
             continue

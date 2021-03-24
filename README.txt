@@ -1,9 +1,9 @@
-This is the README file for A0000000X's submission
+This is the README file for A0184586M and A0170766X submission
+E0196721@u.nus.edu and E0313575@u.nus.edu
 
 == Python Version ==
 
-I'm (We're) using Python Version <3.7.6 or replace version number> for
-this assignment.
+I'm (We're) using Python Version <3.8.7> for this assignment.
 
 == General Notes about this assignment ==
 
@@ -21,22 +21,17 @@ and formatted correctly.
 
 Please put a "x" (without the double quotes) into the bracket of the appropriate statement.
 
-[ ] I/We, A0000000X, certify that I/we have followed the CS 3245 Information
+[x] I/We, A0184586M and A0170766X, certify that I/we have followed the CS 3245 Information
 Retrieval class guidelines for homework assignments.  In particular, I/we
 expressly vow that I/we have followed the Facebook rule in discussing
 with others in doing the assignment and did not take notes (digital or
 printed) from the discussions.  
 
 [ ] I/We, A0000000X, did not follow the class rules regarding homework
-assignment, because of the following reason:
+assignment, because of the following reason: -
 
-<Please fill in>
-
-We suggest that we should be graded as follows:
-
-<Please fill in>
+We suggest that we should be graded as follows: -
 
 == References ==
 
-<Please list any websites and/or people you consulted with for this
-assignment and state their role>
+- CS3245 Piazza forum for comparing results of our search engine

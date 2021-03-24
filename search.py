@@ -16,13 +16,15 @@ def run_search(dict_file, postings_file, queries_file, results_file):
     perform searching on the given queries file and output the results to a file
     """
     print('running search on the queries...')
+
     infile = open(dict_file, 'rb')
     new_dict = pickle.load(infile)
     infile.close()
-    
+
     in_file = open(queries_file, 'r', encoding="utf8")
     out_file = open(results_file, 'w', encoding="utf8")
     query_list = in_file.read().splitlines()
+
     while query_list:
         query = query_list.pop(0)
         if (not query):
@@ -35,7 +37,7 @@ def run_search(dict_file, postings_file, queries_file, results_file):
 
     in_file.close()
     out_file.close()
-        
+
 
 dictionary_file = postings_file = file_of_queries = output_file_of_results = None
 

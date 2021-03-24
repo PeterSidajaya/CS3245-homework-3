@@ -28,8 +28,7 @@ def search(query, dictionary, postings_file):
 
     # To get a faster quering, we precomute the value for tf_idf query vector
     # Next time, we only need to do dot product with each of the given document 
-    for i in range(len(query_keys)):
-        term = query_keys[i]
+    for term in query_keys:
         tf_idf_score = 0
 
         # dictionary is in the form of:
@@ -62,41 +61,49 @@ def search(query, dictionary, postings_file):
 
 
     # dictionary["LENGTH"] is the normalize denominator for a particular document_id which precomputed in index stage
-    document_file_index = dictionary["LENGTH"].keys()   # get all document_id
     ranking_list = []
+    potential_document_id = set()
+    document_term_dict = {}
 
-    for doc_id in document_file_index:
-        doc_length = dictionary["LENGTH"][doc_id]
+    # initialize the dictionary
+    for term in query_keys:
+        document_term_dict[term] = {}
+
+    # calculate tf_idf_score for each term (if it exists in the dictionary)
+    for term in query_keys:
+        tf_idf_score = 0
+
+        if (term in dictionary):
+            term_info = dictionary[term]
+            term_pointer = term_info[1]
+            
+            posting_file.seek(term_pointer)
+            posting_list = pickle.load(posting_file)
+            
+            for (doc_id, term_freq) in posting_list:
+                tf_idf_score = 1 + math.log(term_freq, 10)
+                document_term_dict[term][doc_id] = tf_idf_score / dictionary["LENGTH"][doc_id]  # normalize score
+                potential_document_id.add(doc_id)
+    
+    # sort the list in case two or more document_id score the same
+    potential_document_id = sorted(list(potential_document_id))
+
+    # calculate and rank document_id based on cosine score
+    for doc_id in potential_document_id:
         document_term_vector = []
+        score = []
 
+        # calculate cosine score
         for i in range(len(query_keys)):
             term = query_keys[i]
-            tf_idf_score = 0
-            
-            if (term in dictionary):
-                term_info = dictionary[term]
-                term_pointer = term_info[1]
-                
-                posting_file.seek(term_pointer)
-                posting_list = pickle.load(posting_file)
-                
-                term_freq = get_term_freq(doc_id, posting_list)
-                
-                if (term_freq != 0):
-                    tf_idf_score = 1 + math.log(term_freq, 10)
 
-            document_term_vector.append(tf_idf_score)
-        
-        if (doc_length != 0):
-            # final computed document vector for a particular doc_id
-            document_term_vector = normalize_list(document_term_vector, doc_length)
-        
-        # calculate cosine score
-        score = sum([x * y for x, y in zip(query_term_vector, document_term_vector)])
-        
-        # cosine score == 0, skipped
-        if (score == 0):
-            continue
+            if (term not in document_term_dict or doc_id not in document_term_dict[term]):
+                score.append(0)
+            else:
+                score.append(document_term_dict[term][doc_id] * query_term_vector[i])
+
+        # final cosine score for ranking
+        score = sum(score)
 
         # maintain the top k results and store it in ranking_list
         k = 10
@@ -121,25 +128,3 @@ def search(query, dictionary, postings_file):
 
 def normalize_list(lst, denominator):
     return list(map(lambda x: x/denominator, lst))
-
-
-def get_term_freq(doc_id, term_pointer):
-    # Example:
-    #   term_pointer: [(1,2), (2,3), (4,6), ...]
-    #   doc_id: 2
-    #   return value: 3
-
-    left = 0
-    right = len(term_pointer) - 1
-
-    while (left <= right):
-        mid = (left + right) // 2
-        
-        if (term_pointer[mid][0] == doc_id):
-            return term_pointer[mid][1]
-        elif (term_pointer[mid][0] < doc_id):
-            left = mid + 1
-        else:
-            right = mid - 1
-
-    return 0
